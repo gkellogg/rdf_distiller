@@ -1,0 +1,65 @@
+<h1>RDFa parser</h1>
+<p><span property="doap:description"><a href="http://www.w3.org/TR/rdfa-syntax/">RDFa</a>
+is a specification  for attributes to be used with XHTML or SVG Tiny to express structured data.
+The rendered, hypertext data of XHTML is reused by the RDFa markup,
+so that publishers don’t need to repeat significant data in the document content.
+The underlying abstract representation is <a href="/RDF">RDF</a>,
+which lets publishers build their own vocabulary, extend  others,
+and evolve their vocabulary with maximal interoperability over time.
+rdfa_parser is a distiller that generates the RDF triples from an (X)HTML+RDFa or SVG Tiny&nbsp;1.2 file
+in various RDF serialization formats.
+It can either be used directly from a command line or via a CGI service.
+It corresponds to the <a href="http://www.w3.org//TR/2008/REC-rdfa-syntax-20081014">RDFa Recommendation</a>,
+published on the 14th of October, 2008, and, for the SVG version,
+to the <a href="http://www.w3.org/TR/2008/REC-SVGTiny12-20081222/">SVG Tiny&nbsp;1.2 Recommendation</a>,
+published on the 22nd of December, 2008.</span> 
+The <a href="#distiller">form below</a> can be used to start the service installed at this site.
+To learn more about RDFa, please consult the <a rel="rdfs:seeAlso" href="http://www.w3.org/TR/rdfa-syntax">RDFa Syntax Document</a>.
+See also <a href="#distribution">below</a> for the possibilities to download the package.</p>
+
+<p>rdfa_parser is a Ruby Gem implementation of RDFa. It is available for download and integration as open-source.</p>
+<h3 id="distiller">The Distiller Form</h3>
+<% form_tag root_url do -%>
+  <% field_set_tag("Distil RDFa Information") do %>
+    <label for="uri">URI</label>
+    <%= text_field_tag(:uri, @uri, :size => 80, :label => "URI") %>
+    <% field_set_tag("Options") do %>
+      <label for="fmt">Output Format:</label>
+      <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %>
+      <label for="debug">Show Parser debug information:</label>
+      <%= check_box_tag :debug, "yes", @parser_debug %>
+    <% end %>
+    <%= submit_tag("Submit") %>
+    <p class="help">
+      To distil the RDFa content of an XHTML file, give the address (URI) of an XHTML file and choose the output format of the result.
+    </p>
+    <p class="help">
+      Alternatively, you can add a full XHTML content into the text area below;
+      <em>this will supercede any URI that you give in the field above.</em>
+    </p>
+    <%= text_area_tag(:content, @content, :rows => 15, :cols => 90) %>
+  <% end -%>
+<% end -%>
+<% if @parser -%>
+  <h1>Result</h1>
+  <p><%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %></p>
+<% else -%>
+  <h1>Errors</h1>
+  <p><%= @errors %></p>
+<% end -%>
+<% if @parser_debug %>
+  <h1>Parser Debug Information: </h1>
+  <pre><%= @parser.debug.join("\n") %></pre>
+<% end %>
+<h3>Distiller options</h3>
+<dl>
+  <dt>Output format (option: "fmt", values: "xml", "nt")</dt>
+  <dd>The default format is N-Triples</dd>
+</dl>
+<h2>Alternative access to the Distiller</h2>
+<p>The distiller URI may be used directly with an HTML GET by passing the source URI and fmt options as parameters:</p>
+<pre><%=
+  url = index_url(:format => "xml") + "?uri=#{h(@uri || "http://www.example.com/rdfa.html")}"
+  link_to(url, url)
+%></pre>
+
