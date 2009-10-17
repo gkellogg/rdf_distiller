@@ -10,7 +10,14 @@ describe ParseController do
     @mock_parser.stub(:graph).and_return(@graph)
     RdfaParser::RdfaParser.stub!(:new).and_return(@mock_parser)
     
-    Net::HTTP.stub!(:get).and_return("HTML+RDFa document")
+    resp = mock("resp")
+    resp.stub(:status).and_return(200)
+    resp.stub(:body).and_return("HTML+RDFa document")
+    sess = mock("session")
+    sess.stub(:base_url=)
+    sess.stub(:timeout=)
+    sess.stub(:get).and_return(resp)
+    Patron::Session.stub!(:new).and_return(sess)
   end
   
   def do_parse(options = {})
@@ -28,7 +35,7 @@ describe ParseController do
   end
   
   it "should parse URI" do
-    Net::HTTP.should_receive(:get).with(URI.parse("http://source"))
+    RdfaParser::RdfaParser.should_receive(:new)
     do_parse
   end
   
