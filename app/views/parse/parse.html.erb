@@ -27,7 +27,7 @@ See also <a href="#distribution">below</a> for the possibilities to download the
       <label for="fmt">Output Format:</label>
       <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %>
       <label for="debug">Show Parser debug information:</label>
-      <%= check_box_tag :debug, "yes", @parser_debug %>
+      <%= check_box_tag :debug, "true", @parser_debug %>
     <% end %>
     <%= submit_tag("Submit") %>
     <p class="help">
@@ -40,12 +40,12 @@ See also <a href="#distribution">below</a> for the possibilities to download the
     <%= text_area_tag(:content, @content, :rows => 15, :cols => 90) %>
   <% end -%>
 <% end -%>
-<% if @parser -%>
-  <h1>Result</h1>
-  <p><%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %></p>
-<% else -%>
+<% if @errors -%>
   <h1>Errors</h1>
   <p><%= @errors %></p>
+<% elsif @parser %>
+  <h1>Result</h1>
+  <p><%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %></p>
 <% end -%>
 <% if @parser_debug %>
   <h1>Parser Debug Information: </h1>

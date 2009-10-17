@@ -2,6 +2,7 @@
 
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.3.4' unless defined? RAILS_GEM_VERSION
+ENV['GEM_PATH'] = '/home/kellogg/gems:/usr/lib/ruby/gems/1.8'
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
@@ -22,7 +23,7 @@ Rails::Initializer.run do |config|
   config.gem 'rspec-rails', :lib => false
   config.gem 'rspec', :lib => false
   config.gem 'builder'
-  config.gem 'rdfa_parser'
+  config.gem 'rdfa_parser', :version => ">= 0.0.4"
   config.gem 'patron'
 
   # Only load the plugins named here, in the order given (default is alphabetical).

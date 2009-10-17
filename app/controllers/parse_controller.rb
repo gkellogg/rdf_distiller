@@ -14,18 +14,18 @@ class ParseController < ApplicationController
       resp.body
     end
     @fmt = params[:fmt] || "nt"
+    @parser_debug = params[:debug] || false
     
     @parser = RdfaParser::RdfaParser.new
     @parser.parse(@content, (@uri || root_url).to_s)
-    @parser_debug = params[:debug]
     respond_to do |format|
       format.html { render }
       format.any(:xml, :rdf) { render :xml => @parser.graph.to_rdfxml }
       format.any(:nt, :text) { render :text => @parser.graph.to_ntriples }
     end
-  rescue
-    logger.warn(@errors.inspect)
-    @errors = $!
+  rescue RdfaParser::RdfException
+    @errors = "RdfException: #{$!.class}: #{$!}, errors:\n" + @errors.inspect
+    logger.warn(@errors)
     respond_to do |format|
       format.html { render }
       format.any(:xml, :rdf) { render :xml => {:errors => @errors}.to_xml, :status => :not_acceptable }
