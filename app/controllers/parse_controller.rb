@@ -12,6 +12,8 @@ class ParseController < ApplicationController
       resp = sess.get(@uri.path)
       raise RuntimeError, "HTTP returned status #{resp.status}" if resp.status >= 400
       resp.body
+    rescue
+      nil
     end
     @fmt = params[:fmt] || "nt"
     @parser_debug = params[:debug] || false
