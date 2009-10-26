@@ -30,8 +30,8 @@ class ParseController < ApplicationController
     logger.warn(@errors)
     respond_to do |format|
       format.html { render }
-      format.any(:xml, :rdf) { render :xml => {:errors => @errors}.to_xml, :status => :not_acceptable }
-      format.any(:nt, :text) { render :text => @errors, :status => :not_acceptable }
+      format.any(:xml, :rdf) { render :xml => {:errors => @errors}.to_xml }
+      format.any(:nt, :text) { render :text => @errors }
     end
   end
 end

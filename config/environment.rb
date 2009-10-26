@@ -23,7 +23,7 @@ Rails::Initializer.run do |config|
   config.gem 'rspec-rails', :lib => false
   config.gem 'rspec', :lib => false
   config.gem 'builder'
-  config.gem 'rdfa_parser', :version => ">= 0.1.0"
+  config.gem 'rdfa_parser', :version => ">= 0.1.1"
   config.gem 'patron'
 
   # Only load the plugins named here, in the order given (default is alphabetical).
