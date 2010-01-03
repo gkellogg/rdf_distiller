@@ -16,16 +16,22 @@ class ParseController < ApplicationController
       nil
     end
     @fmt = params[:fmt] || "nt"
+    @in = params[:in] || "rdfa"
     @parser_debug = params[:debug] || false
     
-    @parser = Reddy::RdfaParser.new
+    @parser = case @in
+    when "rdfxml" then RdfContext::RdfXmlParser.new
+    when "n3"     then RdfContext::N3Parser.new
+    else               RdfContext::RdfaParser.new
+    end
     @parser.parse(@content, (@uri || root_url).to_s)
+
     respond_to do |format|
       format.html { render }
       format.any(:xml, :rdf) { render :xml => @parser.graph.to_rdfxml }
       format.any(:nt, :text) { render :text => @parser.graph.to_ntriples }
     end
-  rescue Reddy::RdfException
+  rescue RdfContext::RdfException
     @errors = "RdfException: #{$!.class}: #{$!}, errors:\n" + @errors.inspect
     logger.warn(@errors)
     respond_to do |format|

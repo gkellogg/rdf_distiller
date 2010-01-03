@@ -11,7 +11,7 @@ describe "parse/parse.html.erb" do
   end
   
   it "should display errors" do
-    assigns[:errors] ="Display these errors"
+    assigns[:errors] = "Display these errors"
     render "parse/parse.html.erb"
     response.should contain(assigns[:errors])
   end
