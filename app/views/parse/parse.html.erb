@@ -1,71 +1,67 @@
-<h1>
-  RDFa parser
-</h1>
-<p>
-  <span property="doap:description"><a href="http://www.w3.org/TR/rdfa-syntax/">RDFa</a> is a specification for attributes to be used with XHTML or SVG Tiny to express structured data. The rendered, hypertext data of XHTML is reused by the RDFa markup, so that publishers don’t need to repeat significant data in the document content. The underlying abstract representation is <a href="http://w3.org/RDF">RDF</a>, which lets publishers build their own vocabulary, extend others, and evolve their vocabulary with maximal interoperability over time. rdfa_parser is a distiller that generates the RDF triples from an (X)HTML+RDFa or SVG Tiny&nbsp;1.2 file in various RDF serialization formats. It can either be used directly from a command line or via a Ruby on Rails service. It corresponds to the <a rel="doap:implements" href="http://www.w3.org//TR/2008/REC-rdfa-syntax-20081014">RDFa Recommendation</a>, published on the 14th of October, 2008, and, for the SVG version, to the <a href="http://www.w3.org/TR/2008/REC-SVGTiny12-20081222/">SVG Tiny&nbsp;1.2 Recommendation</a>, published on the 22nd of December, 2008.</span> The <a href="#distiller">form below</a> can be used to start the service installed at this site. To learn more about RDFa, please consult the <a rel="rdfs:seeAlso" href="http://www.w3.org/TR/rdfa-syntax">RDFa Syntax Document</a>. See also <a href="#distribution">below</a> for the possibilities to download the package.
-</p>
-<p>
-  rdfa_parser is a Ruby Gem implementation of <span property="doap:implements">RDFa</span>. It is available for download and integration as open-source. The distiller runs version <%= Reddy::VERSION %> of the gem.
-</p>
-<h3 id="distiller">
-  The Distiller Form
-</h3><% form_tag root_url do -%><% field_set_tag("Distil RDFa Information") do %>
-<p>
-  <label for="uri">URI</label> <%= text_field_tag(:uri, @uri, :size => 80, :label => "URI") %> <% field_set_tag("Options") do %> <label for="fmt">Output Format:</label> <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %> <label for="debug">Show Parser debug information:</label> <%= check_box_tag :debug, "true", @parser_debug %> <% end %> <%= submit_tag("Submit") %>
-</p>
-<p class="help">
-  To distill the RDFa content of an XHTML file, give the address (URI) of an XHTML file and choose the output format of the result.
-</p>
-<p class="help">
-  Alternatively, you can add a full XHTML content into the text area below; <em>this will supersede any URI that you give in the field above.</em>
-</p><%= text_area_tag(:content, @content, :rows => 15, :cols => 90) %><% end -%><% end -%><% if @errors -%>
-<h1>
-  Errors
-</h1>
-<p>
-  <%= @errors %>
-</p><% elsif @parser %>
-<h1>
-  Result
-</h1>
-<p>
-  <%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %>
-</p><% end -%><% if @parser_debug %>
-<h1>
-  Parser Debug Information:
-</h1>
-<pre>
-<%= @parser.debug.join("\n") %>
-</pre><% end %>
-<h3>
-  Distiller options
-</h3>
+<h1>RDF Parser</h1>
+<p><span property="doap:description"><a href="http://www.w3.org/RDF/">Resource Description Framework (RDF)</a> is a language for representing information about resources in the World Wide Web. The underlying abstract representation is <a href="http://w3.org/RDF">RDF</a>, which lets publishers build their own vocabulary, extend others, and evolve their vocabulary with maximal interoperability over time. RdfContext is a <span property="doap:programming-language">Ruby</span> Gem implementing RDF graphs, parsers and serializers to help integrate semantic technologies into Ruby projects.</span></p>
+<p>The distiller parses RDF/XML, RDFa and N3 syntaxes to and generates output either as RDF/XML or N-Triples (N3). The <a href="#distiller">form below</a> can be used to start the service installed at this site.</p>
+<p>To learn more about RDFa, please consult the <a rel="rdfs:seeAlso" href="http://www.w3.org/TR/rdfa-syntax">RDFa Syntax Document</a>. See also <a href="#distribution">below</a> for the possibilities to download the package.</p>
+<p>RdfContext is a Ruby Gem implementation of <span property="doap:implements">RDF</span> including N3, RDF/XML and RDFa parsers. It is available for download and integration as open-source. The distiller runs version <%= RdfContext::VERSION %> of the gem.</p>
+<h3 id="distiller">The Distiller Form</h3>
+<% form_tag root_url do -%>
+  <% field_set_tag("Distill RDF Information") do %>
+    <p>
+      <label for="uri">URI</label>
+      <%= text_field_tag(:uri, @uri, :size => 80, :label => "URI") %>
+      <% field_set_tag("Options") do %>
+        <label for="in">Input Format:</label>
+        <%= select_tag :in, options_for_select({"rdfa" => "rdfa", "rdf/xml" => "rdfxml", "N3" => "n3"}, @in) %>
+        <label for="fmt">Output Format:</label>
+        <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %>
+        <label for="debug">Show Parser debug information:</label>
+        <%= check_box_tag :debug, "true", @parser_debug %>
+      <% end %>
+      <%= submit_tag("Submit") %>
+    </p>
+    <p class="help">
+      To distill the RDF content of a file, give the address (URI) of a file containing RDF markup and choose the output format of the result.
+    </p>
+    <p class="help">
+      Alternatively, you can add a full content into the text area below; <em>this will supersede any URI that you give in the field above.</em>
+    </p>
+    <%= text_area_tag(:content, @content, :rows => 15, :cols => 90) %>
+  <% end -%>
+<% end -%>
+<% if @errors -%>
+  <h1>Errors</h1>
+  <p><%= @errors %></p>
+<% elsif @parser && @parser.graph -%>
+  <h1>Result</h1>
+  <p>
+    <%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %>
+  </p>
+<% elsif @parser -%>
+  <h1>Inspect</h1>
+  <%= debug @parser %>
+<% end -%>
+<% if @parser_debug && @parser.debug %>
+  <h1>Parser Debug Information:</h1>
+  <pre><%= @parser.debug.join("\n") %></pre>
+<% end %>
+<h3>Distiller options</h3>
 <dl>
-  <dt>
-    Output format (option: "fmt", values: "xml", "nt")
-  </dt>
-  <dd>
-    The default format is N-Triples
-  </dd>
+  <dt>Input format (option: "in", values: "rdfxml", "rdfa", "n3")</dt>
+  <dd>The default input format is RDFa</dd>
+  <dt>Output format (option: "format", values: "xml", "nt")</dt>
+  <dd>The default output format is N-Triples</dd>
 </dl>
-<h2>
-  Alternative access to the Distiller
-</h2>
-<p>
-  The distiller URI may be used directly with an HTML GET by passing the source URI and fmt options as parameters:
-</p>
+<h2>Alternative access to the Distiller</h2>
+<p>The distiller URI may be used directly with an HTML GET by passing the source URI and fmt options as parameters:</p>
 <pre>
-<%=
-  url = index_url(:format => "xml") + "?uri=#{h(@uri || "http://www.example.com/rdfa.html")}"
-  link_to(url, url)
-%>
+  <%=
+    url = index_url(:format => "#{@fmt}", :in => "#{@in}") + "&uri=#{h(@uri || "http://www.example.com/rdfa.html")}"
+    link_to(url, url)
+  %>
 </pre>
-<h2 id="distribution">
-  Distribution
-</h2>
-<p>
-  The underlying package, called <span property="doap:name">rdfa_parser</span>, implemented as a <span property="doap:programming-language">Ruby</span> gem, is also <span rel="doap:repository-location doap:repository doap:file-release doap:download-page"><a typeof="doap:Repository" href="http://gemcutter.org/gems/rdfa_parser">available for download</a></span>.
-  You can also access the <span rel="doap:repository-location doap:repository doap:homepage"><a typeof="doap:GitRepository" href="http://github.com/gkellogg/rdfa_parser">Git project</a></span> or download the source: git clone git://github.com/gkellogg/rdfa_parser.git
+<h2 id="distribution">Distribution</h2>
+<p>The underlying package, called <span property="doap:name">RdfContext</span>, implemented as a <span property="doap:programming-language">Ruby</span> gem, is also <span rel="doap:repository-location doap:repository doap:file-release doap:download-page"><a typeof="doap:Repository" href="http://gemcutter.org/gems/rdf_context">available for download</a></span>.
+  You can also access the <span rel="doap:repository-location doap:repository doap:homepage"><a typeof="doap:GitRepository" href="http://github.com/gkellogg/rdf_context">Git project</a></span> or download the source: git clone git://github.com/gkellogg/rdf_context.git.
 </p>
 <hr>
 <address>

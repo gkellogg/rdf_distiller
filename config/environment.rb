@@ -23,7 +23,7 @@ Rails::Initializer.run do |config|
   config.gem 'rspec-rails', :lib => false
   config.gem 'rspec', :lib => false
   config.gem 'builder'
-  config.gem 'reddy'
+  config.gem 'rdf_context'
   config.gem 'patron'
 
   # Only load the plugins named here, in the order given (default is alphabetical).

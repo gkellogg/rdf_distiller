@@ -8,7 +8,7 @@ describe ParseController do
     @graph.stub(:to_rdfxml).and_return("rdfxml")
     @mock_parser.stub(:parse).and_return(@graph)
     @mock_parser.stub(:graph).and_return(@graph)
-    RdfaParser::RdfaParser.stub!(:new).and_return(@mock_parser)
+    RdfContext::RdfaParser.stub!(:new).and_return(@mock_parser)
     
     resp = mock("resp")
     resp.stub(:status).and_return(200)
@@ -30,12 +30,12 @@ describe ParseController do
   end
   
   it "should run parser" do
-    RdfaParser::RdfaParser.should_receive(:new)
+    RdfContext::RdfaParser.should_receive(:new)
     do_parse
   end
   
   it "should parse URI" do
-    RdfaParser::RdfaParser.should_receive(:new)
+    RdfContext::RdfaParser.should_receive(:new)
     do_parse
   end
   
