@@ -16,6 +16,10 @@
         <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %>
         <label for="debug">Show Parser debug information:</label>
         <%= check_box_tag :debug, "true", @parser_debug %>
+        <!--
+        <label for="strict">Fail on errors:</label>
+        <%= check_box_tag :strict, "true", @strict %>
+        -->
       <% end %>
       <%= submit_tag("Submit") %>
     </p>

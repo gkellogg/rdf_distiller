@@ -18,13 +18,18 @@ class ParseController < ApplicationController
     @fmt = params[:fmt] || "nt"
     @in = params[:in] || "rdfa"
     @parser_debug = params[:debug] || false
+    @strict = params[:strict] || false
+    
+    parser_opts = {:string => @strict, :debug => @parser_debug && []}
     
     @parser = case @in
     when "rdfxml" then RdfContext::RdfXmlParser.new
     when "n3"     then RdfContext::N3Parser.new
     else               RdfContext::RdfaParser.new
     end
-    @parser.parse(@content, (@uri || root_url).to_s)
+    #$verbose = true
+    @parser.parse(@content, (@uri || root_url).to_s, parser_opts)
+    #$verbose = false
 
     respond_to do |format|
       format.html { render }
