@@ -19,13 +19,19 @@ class ParseController < ApplicationController
     @in = params[:in] || "rdfa"
     @parser_debug = params[:debug] || false
     @strict = params[:strict] || false
+    @base = params[:base]
+    @max_depth = params[:max_depth]
+    @attributes = params[:attributes]
+    @lang = params[:lang]
     
-    parser_opts = {:string => @strict, :debug => @parser_debug && []}
+    parser_opts = {:strict => @strict, :debug => @parser_debug && []}
+    @serializer_opts = {:format => @fmt}.merge(params.slice(:base, :lang, :depth, :attributes)).symbolize_keys
     
     @parser = case @in
-    when "rdfxml" then RdfContext::RdfXmlParser.new
-    when "n3"     then RdfContext::N3Parser.new
-    else               RdfContext::RdfaParser.new
+    when "rdfxml", "rdf", "xml" then RdfContext::RdfXmlParser.new
+    when "n3", "ttl"            then RdfContext::N3Parser.new
+    when "html", "rdfa"         then RdfContext::RdfaParser.new
+    else                             RdfContext::Parser.new
     end
     #$verbose = true
     @parser.parse(@content, (@uri || root_url).to_s, parser_opts)
@@ -33,8 +39,9 @@ class ParseController < ApplicationController
 
     respond_to do |format|
       format.html { render }
-      format.any(:xml, :rdf) { render :xml => @parser.graph.to_rdfxml }
-      format.any(:nt, :text) { render :text => @parser.graph.to_ntriples }
+      format.any(:xml, :rdf) { render :xml => @parser.graph.serialize(@serializer_opts.merge(:format => "xml")) }
+      format.any(:nt, :text) { render :text => @parser.graph.serialize(@serializer_opts.merge(:format => "nt")) }
+      format.any(:n3, :ttl) { render :text => @parser.graph.serialize(@serializer_opts.merge(:format => "ttl")) }
     end
   rescue RdfContext::RdfException
     @errors = "RdfException: #{$!.class}: #{$!}, errors:\n" + @errors.inspect

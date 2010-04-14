@@ -8,3 +8,5 @@
 # XML alias for NT
 Mime::Type.register_alias("text/plain", :nt)
 Mime::Type.register_alias("application/xml", :rdf)
+Mime::Type.register("text/turtle", :ttl)
+Mime::Type.register("text/n3", :n3)

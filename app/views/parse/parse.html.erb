@@ -1,6 +1,6 @@
 <h1>RDF Parser</h1>
 <p><span property="doap:description"><a href="http://www.w3.org/RDF/">Resource Description Framework (RDF)</a> is a language for representing information about resources in the World Wide Web. The underlying abstract representation is <a href="http://w3.org/RDF">RDF</a>, which lets publishers build their own vocabulary, extend others, and evolve their vocabulary with maximal interoperability over time. RdfContext is a <span property="doap:programming-language">Ruby</span> Gem implementing RDF graphs, parsers and serializers to help integrate semantic technologies into Ruby projects.</span></p>
-<p>The distiller parses RDF/XML, RDFa and N3 syntaxes to and generates output either as RDF/XML or N-Triples (N3). The <a href="#distiller">form below</a> can be used to start the service installed at this site.</p>
+<p>The distiller parses RDF/XML, RDFa and N3 syntaxes to and generates output either as RDF/XML, Turtle or N-Triples (N3). The <a href="#distiller">form below</a> can be used to start the service installed at this site.</p>
 <p>To learn more about RDFa, please consult the <a rel="rdfs:seeAlso" href="http://www.w3.org/TR/rdfa-syntax">RDFa Syntax Document</a>. See also <a href="#distribution">below</a> for the possibilities to download the package.</p>
 <p>RdfContext is a Ruby Gem implementation of <span property="doap:implements">RDF</span> including N3, RDF/XML and RDFa parsers. It is available for download and integration as open-source. The distiller runs version <%= RdfContext::VERSION %> of the gem.</p>
 <h3 id="distiller">The Distiller Form</h3>
@@ -8,18 +8,30 @@
   <% field_set_tag("Distill RDF Information") do %>
     <p>
       <label for="uri">URI</label>
-      <%= text_field_tag(:uri, @uri, :size => 80, :label => "URI") %>
+      <%= text_field_tag(:uri, @uri, :size => 80) %>
       <% field_set_tag("Options") do %>
-        <label for="in">Input Format:</label>
-        <%= select_tag :in, options_for_select({"rdfa" => "rdfa", "rdf/xml" => "rdfxml", "N3" => "n3"}, @in) %>
-        <label for="fmt">Output Format:</label>
-        <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt"}, @fmt) %>
-        <label for="debug">Show Parser debug information:</label>
-        <%= check_box_tag :debug, "true", @parser_debug %>
-        <!--
-        <label for="strict">Fail on errors:</label>
-        <%= check_box_tag :strict, "true", @strict %>
-        -->
+        <p>
+          <label for="in">Input Format:</label>
+          <%= select_tag :in, options_for_select({"rdfa" => "rdfa", "rdf/xml" => "rdfxml", "N3" => "n3", "auto" => "auto"}, @in) %>
+          <label for="fmt">Output Format:</label>
+          <%= select_tag :fmt, options_for_select({"rdf/xml" => "xml", "N Triples" => "nt", "Turtle" => "ttl"}, @fmt) %>
+          <label for="debug">Show Parser debug information:</label>
+          <%= check_box_tag :debug, "true", @parser_debug %>
+          <label for="strict">Fail on errors:</label>
+          <%= check_box_tag :strict, "true", @strict %>
+        </p>
+        <p>
+          <label for="base">Base URI</label>
+          <%= text_field_tag(:base, @base, :size => 80) %>
+        </p>
+        <p>
+          <label for="max_depth">RDF/XML Recursion Depth</label>
+          <%= select_tag :max_depth, options_for_select(%w(1 2 3 4), @depth)%>
+          <label for="attributes">RDF/XML Attribute usage</label>
+          <%= select_tag :attributes, options_for_select(%w(none untyped typed), @attributes)%>
+          <label for="lang">Language</label>
+          <%= text_field_tag(:lang, @lang, :size => 6) %>
+        </p>
       <% end %>
       <%= submit_tag("Submit") %>
     </p>
@@ -29,7 +41,7 @@
     <p class="help">
       Alternatively, you can add a full content into the text area below; <em>this will supersede any URI that you give in the field above.</em>
     </p>
-    <%= text_area_tag(:content, @content, :rows => 15, :cols => 90) %>
+    <%= text_area_tag(:content, @content, :rows => 15, :cols => 120) %>
   <% end -%>
 <% end -%>
 <% if @errors -%>
@@ -38,7 +50,8 @@
 <% elsif @parser && @parser.graph -%>
   <h1>Result</h1>
   <p>
-    <%= text_area_tag(:result, @parser.graph.send(@fmt == "nt" ? :to_ntriples : :to_rdfxml), :rows => 10, :cols => 120) %>
+    <% logger.info("Serialize with options #{@serializer_opts.inspect}")%>
+    <%= text_area_tag(:result, @parser.graph.serialize(@serializer_opts), :rows => 20, :cols => 120) %>
   </p>
 <% elsif @parser -%>
   <h1>Inspect</h1>
@@ -52,7 +65,7 @@
 <dl>
   <dt>Input format (option: "in", values: "rdfxml", "rdfa", "n3")</dt>
   <dd>The default input format is RDFa</dd>
-  <dt>Output format (option: "format", values: "xml", "nt")</dt>
+  <dt>Output format (option: "format", values: "xml", "nt", "ttl", "n3")</dt>
   <dd>The default output format is N-Triples</dd>
 </dl>
 <h2>Alternative access to the Distiller</h2>

@@ -21,7 +21,7 @@ describe ParseController do
   end
   
   def do_parse(options = {})
-    options.reverse_merge(:accept => "text/html")
+    options.reverse_merge!(:accept => "text/html")
     request.accept = options.delete(:accept)
     get :parse, {:uri => "http://source"}.merge(options)
     
@@ -45,18 +45,32 @@ describe ParseController do
   end
   
   it "should parse uri and generate triples with accept" do
-    @graph.should_receive(:to_ntriples)
+    @graph.should_receive(:serialize).with(:format => "nt")
     do_parse(:accept => "text/plain")
-    #do_parse(:format => "nt")
+  end
+
+  it "should parse uri and generate xml with accept" do
+    @graph.should_receive(:serialize).with(:format => "xml")
+    do_parse(:accept => "application/xml")
+  end
+
+  it "should parse uri and generate turtle with accept" do
+    @graph.should_receive(:serialize).with(:format => "ttl")
+    do_parse(:accept => "text/turtle")
   end
 
   it "should parse uri and generate xml with format" do
-    @graph.should_receive(:to_rdfxml)
+    @graph.should_receive(:serialize).with(:format => "xml")
     do_parse(:format => "xml")
   end
 
+  it "should parse uri and generate turtle with format" do
+    @graph.should_receive(:serialize).with(:format => "ttl")
+    do_parse(:format => "ttl")
+  end
+
   it "should parse uri and generate triples with format" do
-    @graph.should_receive(:to_ntriples)
+    @graph.should_receive(:serialize).with(:format => "nt")
     do_parse(:format => "nt")
   end
 end
