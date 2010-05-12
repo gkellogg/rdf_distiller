@@ -43,7 +43,7 @@ class ParseController < ApplicationController
       format.any(:nt, :text) { render :text => @parser.graph.serialize(@serializer_opts.merge(:format => "nt")) }
       format.any(:n3, :ttl) { render :text => @parser.graph.serialize(@serializer_opts.merge(:format => "ttl")) }
     end
-  rescue RdfContext::RdfException
+  rescue
     @errors = "RdfException: #{$!.class}: #{$!}, errors:\n" + @errors.inspect
     logger.warn(@errors)
     respond_to do |format|
