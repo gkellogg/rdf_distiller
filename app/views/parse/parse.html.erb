@@ -83,7 +83,7 @@
 <% end -%>
 <% if @parser_debug && @parser.debug %>
   <h1>Parser Debug Information:</h1>
-  <pre><%= @parser.debug.join("\n") %></pre>
+  <pre><%= h @parser.debug.join("\n") %></pre>
 <% end %>
 <h3>Distiller options</h3>
 <dl>
